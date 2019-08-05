@@ -15,6 +15,8 @@ The Advantage Actor Critic algorithm implementation for the OpenAI Gym's CartPol
   Critic network architecture: (FC-layer(input_shape, 512), FC-layer(512, 1))
 
   Advantage function: **R(t) - V(s_t)**
+  
+  c (Weightage of the critic MSE error in the criterion): 0.01 
 
 
 
