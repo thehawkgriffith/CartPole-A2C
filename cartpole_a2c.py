@@ -84,16 +84,16 @@ class Agent:
     def update_parameters(self, trajectories, gamma):
         c = 0.01
         loss = torch.tensor([0]).float().cuda()
-        optim = torch.optim.Adam(list(self.policy_net.parameters()) + list(self.baseline.parameters()))
+        optim = torch.optim.Adam(list(self.policy_net.parameters()) + list(self.baseline.parameters()), lr=0.01)
         for trajectory in trajectories:
             for t in range(len(trajectory['rewards'])):
                 r_t = torch.tensor([0]).float().cuda()
                 log_prob = trajectory['log_probs'][t]
                 temp = trajectory['rewards'][t:t + 20]
-                for i, reward in enumerate(temp):
+                for i, reward in enumerate(temp[:-1]):
                     r_t += gamma ** i * reward
                 critic_estimate = self.baseline(trajectory['states'][t])[0]
-                r_t += gamma ** i * critic_estimate
+                r_t += gamma ** i * self.baseline(trajectory['states'][i+1])[0]
                 advantage_t = r_t - critic_estimate
                 loss += (-log_prob * advantage_t) + (c * (critic_estimate - r_t) ** 2)
                 if t % 20 == 0:
